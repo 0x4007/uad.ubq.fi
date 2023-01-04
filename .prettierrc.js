@@ -5,5 +5,18 @@ module.exports = {
   singleQuote: false,
   printWidth: 160,
   htmlWhitespaceSensitivity: "strict",
-  plugins: [require("prettier-plugin-tailwindcss")],
+  plugins: [],
+  overrides: [
+    {
+      files: "*.sol",
+      options: {
+        printWidth: 80,
+        tabWidth: 4,
+        useTabs: false,
+        singleQuote: false,
+        bracketSpacing: false,
+        explicitTypes: "always",
+      },
+    },
+  ],
 };

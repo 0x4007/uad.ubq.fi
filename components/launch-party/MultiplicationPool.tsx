@@ -1,6 +1,6 @@
+import * as widget from "@/ui/widget";
 import BondingPool from "./BondingPool";
 import { goldenPool, PoolData } from "./lib/pools";
-import * as widget from "../ui/widget";
 
 type MultiplicationPoolParams = {
   enabled: boolean;

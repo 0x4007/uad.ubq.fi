@@ -1,42 +1,32 @@
+import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
-import "@nomiclabs/hardhat-ethers";
 import "@typechain/hardhat";
 import * as dotenv from "dotenv";
+import fs from "fs";
 import "hardhat-deploy";
 import "hardhat-gas-reporter";
-import "solidity-coverage";
 import { HardhatUserConfig } from "hardhat/types";
-
-import fs from "fs";
 import path from "path";
-
+import "solidity-coverage";
+import { colorizeText } from "./tasks/utils/console-colors";
 
 if (fs.existsSync(path.join(__dirname, "artifacts/types"))) {
   import("./tasks/index");
 } else {
-  console.warn(
-    "Tasks loading skipped until compilation artifacts are available"
-  );
+  console.warn("Tasks loading skipped until compilation artifacts are available");
 }
 
-dotenv.config();
-const {
-  MNEMONIC,
-  UBQ,
-  API_KEY_ALCHEMY,
-  API_KEY_ETHERSCAN,
-  REPORT_GAS,
-  API_KEY_COINMARKETCAP,
-} = process.env;
+dotenv.config({ path: path.join(__dirname, "../../.env") });
+const { MNEMONIC, UBQ_ADMIN, API_KEY_ALCHEMY, REPORT_GAS } = process.env;
 
-const mnemonic = `${MNEMONIC || "test test test test test test test test test test test junk"
-  }`;
+const accounts = { mnemonic: "test test test test test test test test test test test junk" }; // use default accounts
 
-const accounts = {
-  // use default accounts
-  mnemonic,
-};
+if (!MNEMONIC) {
+  warn("MNEMONIC environment variable unset");
+} else {
+  accounts.mnemonic = MNEMONIC;
+}
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -84,30 +74,19 @@ const config: HardhatUserConfig = {
     MetaPoolAddress: "0x20955cb69ae1515962177d164dfc9522feef567e",
     BondingAddress: "0x831e3674Abc73d7A3e9d8a9400AF2301c32cEF0C",
     BondingV2Address: "0xdAC17F958D2ee523a2206206994597C13D831ec7", // FAKE ADDRESS, TO BE REPLACED AFTER V2 DEPLOYMENT
-    UbiquityAlgorithmicDollarManagerAddress:
-      "0x4DA97a8b831C345dBe6d16FF7432DF2b7b776d98",
+    UbiquityAlgorithmicDollarManagerAddress: "0x4DA97a8b831C345dBe6d16FF7432DF2b7b776d98",
     jarUSDCAddr: "0xEB801AB73E9A2A482aA48CaCA13B1954028F4c94",
     jarYCRVLUSDaddr: "0x4fFe73Cf2EEf5E8C8E0E10160bCe440a029166D2",
     strategyYearnUsdcV2: "0xEecEE2637c7328300846622c802B2a29e65f3919",
     usdcWhaleAddress: "0x72A53cDBBcc1b9efa39c834A540550e23463AAcB",
     pickleControllerAddr: "0x6847259b2B3A4c17e7c43C54409810aF48bA5210",
   },
-
-  /*   paths: {
-    deploy: "./scripts/deployment",
-    deployments: "./deployments",
-    sources: "./contracts",
-    tests: "./tests",
-    cache: "./cache",
-    artifacts: "./artifacts",
-  }, */
   networks: {
     localhost: {
-      url: `http://127.0.0.1:8545`,
+      url: "http://0.0.0.0:8545",
       forking: {
-        url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.API_KEY_ALCHEMY || ""
-          }`,
-        blockNumber: 13252206,
+        url: process.env.MAINNET_PROVIDER_URL || `https://eth-mainnet.alchemyapi.io/v2/${process.env.API_KEY_ALCHEMY || ""}`,
+        // blockNumber: 13252206,
       },
       accounts,
       hardfork: "london",
@@ -115,29 +94,26 @@ const config: HardhatUserConfig = {
     },
     hardhat: {
       forking: {
-        url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.API_KEY_ALCHEMY || ""
-          }`,
-        blockNumber: 13252206,
+        url: process.env.MAINNET_PROVIDER_URL || `https://eth-mainnet.alchemyapi.io/v2/${process.env.API_KEY_ALCHEMY || ""}`,
+        // blockNumber: 15173327,
       },
       accounts,
       hardfork: "london",
       initialBaseFeePerGas: 0,
     },
     mainnet: {
-      url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.API_KEY_ALCHEMY || ""
-        }`,
-      accounts: UBQ ? [UBQ] : accounts,
+      url: process.env.MAINNET_PROVIDER_URL || `https://eth-mainnet.alchemyapi.io/v2/${process.env.API_KEY_ALCHEMY || ""}`,
+      accounts: UBQ_ADMIN ? [UBQ_ADMIN] : accounts,
       gasPrice: 60000000000,
     },
     ropsten: {
       gasPrice: 60000000000,
-      url: `https://eth-ropsten.alchemyapi.io/v2/${process.env.API_KEY_ALCHEMY || ""
-        }`,
+      url: process.env.ROPSTEN_PROVIDER_URL || `https://eth-ropsten.alchemyapi.io/v2/${process.env.API_KEY_ALCHEMY || ""}`,
       accounts,
     },
     rinkeby: {
       gasPrice: 60000000000,
-      url: `https://eth-rinkeby.alchemyapi.io/v2/${API_KEY_ALCHEMY || ""}`,
+      url: process.env.RINKEBY_PROVIDER_URL || `https://eth-rinkeby.alchemyapi.io/v2/${API_KEY_ALCHEMY || ""}`,
       accounts,
     },
   },
@@ -146,16 +122,43 @@ const config: HardhatUserConfig = {
     target: "ethers-v5",
   },
   gasReporter: {
-    enabled: REPORT_GAS === "true", currency: "USD",
+    enabled: REPORT_GAS === "true",
+    currency: "USD",
     gasPrice: 60,
     onlyCalledMethods: true,
-    coinmarketcap: `${API_KEY_COINMARKETCAP || ""}`,
+    coinmarketcap: getKey("COINMARKETCAP"),
   },
   etherscan: {
     // Your API key for Etherscan
     // Obtain one at https://etherscan.io/
-    apiKey: `${API_KEY_ETHERSCAN || ""}`,
+    apiKey: getKey("ETHERSCAN"),
   },
 };
 
 export default config;
+
+export function getAlchemyRpc(network: "mainnet" | "ropsten" | "rinkeby"): string {
+  // This will try and resolve alchemy key related issues
+  // first it will read the key value
+  // if no value found, then it will attempt to load the .env from above to the .env in the current folder
+  // if that fails, then it will throw an error and allow the developer to rectify the issue
+  if (process.env.API_KEY_ALCHEMY?.length) {
+    return `https://eth-${network}.alchemyapi.io/v2/${process.env.API_KEY_ALCHEMY}`;
+  } else {
+    throw new Error("Please set the API_KEY_ALCHEMY environment variable to your Alchemy API key");
+  }
+}
+
+export function getKey(keyName: "ETHERSCAN" | "COINMARKETCAP") {
+  const PREFIX = "API_KEY_";
+  const ENV_KEY = PREFIX.concat(keyName);
+  if (process.env[ENV_KEY]) {
+    return process.env[ENV_KEY] as string;
+  } else {
+    warn(`Please set the ${ENV_KEY} environment variable to your ${keyName} API key`);
+  }
+}
+
+export function warn(message: string) {
+  console.warn(colorizeText(`\t⚠ ${message}`, "fgYellow"));
+}
