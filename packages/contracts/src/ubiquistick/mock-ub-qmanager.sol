@@ -8,7 +8,7 @@ contract MockUBQmanager is AccessControl {
         keccak256("GOVERNANCE_TOKEN_MINTER_ROLE");
 
     constructor() {
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
     function setupMinterRole(address to) public {
@@ -16,6 +16,6 @@ contract MockUBQmanager is AccessControl {
             hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
             "Governance token: not minter"
         );
-        _setupRole(GOVERNANCE_TOKEN_MINTER_ROLE, to);
+        _grantRole(GOVERNANCE_TOKEN_MINTER_ROLE, to);
     }
 }

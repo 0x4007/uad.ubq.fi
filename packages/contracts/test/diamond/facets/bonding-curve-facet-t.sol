@@ -3,7 +3,6 @@ pragma solidity ^0.8.16;
 
 import "../diamond-test-setup.sol";
 import "../../../src/dollar/libraries/constants.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import {MockERC20} from "../../../src/dollar/mocks/mock-erc-20.sol";
 import {MockCreditNft} from "../../../src/dollar/mocks/mock-credit-nft.sol";
 import "forge-std/test.sol";
@@ -36,7 +35,6 @@ contract BondingCurveFacetTest is DiamondSetup {
 }
 
 contract ZeroStateBonding is BondingCurveFacetTest {
-    using SafeMath for uint256;
     using stdStorage for StdStorage;
 
     function testSetParams(uint32 connectorWeight, uint256 baseY) public {
@@ -93,9 +91,8 @@ contract ZeroStateBonding is BondingCurveFacetTest {
         // Logic Test
         uint256 baseN = collateralDeposited.add(baseY);
         uint256 power = (baseN.mul(10 ** 18)).div(baseY);
-        uint256 result = ACCURACY
-            .mul(SafeMath.sub((power ** (connectorWeight)), 10 ** 18))
-            .div(10 ** 18);
+        uint256 result = (ACCURACY * ((power ** connectorWeight) - 10 ** 18)) /
+            10 ** 18;
 
         assertEq(collateralDeposited, IBondingCurveFacet.poolBalance());
         assertEq(collateralDeposited, finBal - initBal);

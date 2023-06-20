@@ -9,15 +9,14 @@ import {UbiquityDollarToken} from "../core/ubiquity-dollar-token.sol";
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Ubiquity} from "../interfaces/ierc-20-ubiquity.sol";
-import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import {IStableSwap3Pool} from "../interfaces/i-stable-swap-3-pool.sol";
 import {IMetaPool} from "../interfaces/i-meta-pool.sol";
 import {LibAppStorage, AppStorage} from "./lib-app-storage.sol";
 import {LibTWAPOracle} from "./lib-twap-oracle.sol";
 
 library LibUbiquityPool {
-    using SafeMath for uint256;
-    using SafeMath for uint8;
+    // using SafeMath for uint256;
+    // using SafeMath for uint8;
     using SafeERC20 for IERC20;
 
     bytes32 constant UBIQUITY_POOL_STORAGE_POSITION =
