@@ -23,12 +23,12 @@ export function vestingMath({ investorAllocationPercentage, totalSupplyCached }:
 
   const investorShouldGet = shareOfTotalSupply * percentVested;
 
-  console.log({
-    shareOfTotalSupply,
-    totalSupplyCached,
-    investorAllocationPercentage,
-    investorShouldGet,
-  });
+  // console.log({
+  //   shareOfTotalSupply,
+  //   totalSupplyCached,
+  //   investorAllocationPercentage,
+  //   investorShouldGet,
+  // });
 
   return investorShouldGet; // 18,487.0939406307
 }
