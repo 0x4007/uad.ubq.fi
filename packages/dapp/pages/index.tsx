@@ -10,7 +10,7 @@ import MigrateButton from "@/components/redeem/MigrateButton";
 import WalletNotConnected from "@/components/ui/WalletNotConnected";
 
 const index: FC = (): JSX.Element => {
-  const [twapPrice, setTwapPrice] = useState<ethers.BigNumber | null>(null);
+  const [, setTwapPrice] = useState<ethers.BigNumber | null>(null);
   const [walletAddress] = useWalletAddress();
   const managedContracts = useManagerManaged();
 

@@ -3,7 +3,12 @@ import contractDeployments from "@ubiquity/contracts/deployments.json";
 import { useNetwork } from "wagmi";
 
 const LOCAL_CHAIN = 31337;
-const deployedContracts: Record<string, any> = contractDeployments;
+const deployedContracts: Record<
+  string,
+  {
+    contracts: Record<string, { address: string; abi: unknown }>;
+  }
+> = contractDeployments;
 
 const useDeployedAddress = (...names: string[]): string[] => {
   const { chain } = useNetwork();

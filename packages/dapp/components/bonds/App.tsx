@@ -33,7 +33,7 @@ const App = () => {
   const { rewardTokenBalance, tokensRatios, poolsData, bondsData, needsStick, refreshSimpleBondData } = useSimpleBond(contracts, tokensContracts);
   const { uarUsdPrice } = usePrices(contracts, tokensContracts, poolsData);
 
-  const [showAdminComponents, setShowAdminComponents] = useState(false);
+  const [, setShowAdminComponents] = useState(false);
 
   // ████████╗██████╗  █████╗ ███╗   ██╗███████╗ █████╗  ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
   // ╚══██╔══╝██╔══██╗██╔══██╗████╗  ██║██╔════╝██╔══██╗██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
